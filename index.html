@@ -85,13 +85,55 @@
             </div>
           </div>
 
-          <button type="submit" class="btn btn-success mt-3">
-            Send video request
-          </button>
+          <div class="d-flex justify-content-center align-items-center">
+            <button type="submit" class="btn btn-success mt-3">
+              Send video request
+            </button>
+          </div>
         </form>
       </div>
       <hr />
       <h1 class="mb-4">List of requested videos</h1>
+
+      <div
+        class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 mb-4"
+      >
+        <!-- Sort Group -->
+        <div class="btn-group btn-group-toggle mt-4" data-toggle="buttons">
+          <label class="btn btn-primary active" id="sort_by_new">
+            <input type="radio" name="sort" value="newFirst" /> New first
+          </label>
+          <label class="btn btn-primary" id="sort_by_top">
+            <input type="radio" name="sort" value="topVotedFirst" />
+            Top voted first
+          </label>
+        </div>
+
+        <!-- Filter Group -->
+        <div class="btn-group btn-group-toggle mt-4" data-toggle="buttons">
+          <label class="btn btn-primary active" id="filter_by_all">
+            <input type="radio" name="filter" value="all" checked /> All
+          </label>
+          <label class="btn btn-primary" id="filter_by_new">
+            <input type="radio" name="filter" value="new" /> New
+          </label>
+          <label class="btn btn-primary" id="filter_by_planned">
+            <input type="radio" name="filter" value="planned" /> Planned
+          </label>
+          <label class="btn btn-primary" id="filter_by_done">
+            <input type="radio" name="filter" value="done" /> Done
+          </label>
+        </div>
+
+        <div>
+          <input
+            type="search"
+            class="form-control mt-4"
+            id="search_box"
+            placeholder="Type your search term"
+          />
+        </div>
+      </div>
       <div id="listOfRequests"></div>
     </div>
 

@@ -1,3 +1,5 @@
+const listOfCardsContainer = document.getElementById("listOfRequests");
+
 function getSingleVideoReq(videoInfo) {
   let card = document.createElement("div");
   card.innerHTML = `
@@ -45,63 +47,81 @@ function getSingleVideoReq(videoInfo) {
   return card;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const videoRequestForm = document.getElementById("form_video_request");
-  const listOfCardsContainer = document.getElementById("listOfRequests");
+function addVotingFunctionality(videoInfo) {
+  const voteUpsEle = document.getElementById(`votes_ups_${videoInfo._id}`);
+  const voteDownsEle = document.getElementById(`votes_downs_${videoInfo._id}`);
+  const scoreVote = document.getElementById(`score_vote_${videoInfo._id}`);
 
-  fetch("http://localhost:7777/video-request")
+  voteUpsEle.addEventListener("click", (e) => {
+    fetch("http://localhost:7777/video-request/vote", {
+      method: "PUT",
+      headers: {
+        "content-Type": "application/json",
+      },
+
+      body: JSON.stringify({
+        id: videoInfo._id,
+        vote_type: "ups",
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        scoreVote.textContent = data.ups - data.downs;
+      });
+  });
+
+  voteDownsEle.addEventListener("click", (e) => {
+    fetch("http://localhost:7777/video-request/vote", {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+      },
+
+      body: JSON.stringify({
+        id: videoInfo._id,
+        vote_type: "downs",
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        scoreVote.textContent = data.ups - data.downs;
+      });
+  });
+}
+
+function loadAllVideoRequests(sortedByOption = "newFirst") {
+  fetch(`http://localhost:7777/video-request?sortBy=${sortedByOption}`)
     .then((response) => response.json())
     .then((data) => {
+      listOfCardsContainer.innerHTML = "";
+
       data.forEach((videoInfo) => {
         listOfCardsContainer.appendChild(getSingleVideoReq(videoInfo));
-
-        const voteUpsEle = document.getElementById(
-          `votes_ups_${videoInfo._id}`
-        );
-        const voteDownsEle = document.getElementById(
-          `votes_downs_${videoInfo._id}`
-        );
-        const scoreVote = document.getElementById(
-          `score_vote_${videoInfo._id}`
-        );
-
-        voteUpsEle.addEventListener("click", (e) => {
-          fetch("http://localhost:7777/video-request/vote", {
-            method: "PUT",
-            headers: {
-              "content-Type": "application/json",
-            },
-
-            body: JSON.stringify({
-              id: videoInfo._id,
-              vote_type: "ups",
-            }),
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              scoreVote.textContent = data.ups - data.downs;
-            });
-        });
-
-        voteDownsEle.addEventListener("click", (e) => {
-          fetch("http://localhost:7777/video-request/vote", {
-            method: "PUT",
-            headers: {
-              "content-type": "application/json",
-            },
-
-            body: JSON.stringify({
-              id: videoInfo._id,
-              vote_type: "downs",
-            }),
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              scoreVote.textContent = data.ups - data.downs;
-            });
-        });
+        addVotingFunctionality(videoInfo);
       });
     });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const videoRequestForm = document.getElementById("form_video_request");
+  const sortByElements = document.querySelectorAll("[id*=sort_by_]");
+
+  loadAllVideoRequests();
+
+  sortByElements.forEach((ele) => {
+    ele.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      const sortBy = this.querySelector("input");
+      loadAllVideoRequests(sortBy.value);
+
+      sortByElements.forEach((ele) => {
+        ele.classList.remove("active");
+      });
+
+      e.currentTarget.classList.add("active");
+    });
+  });
 
   videoRequestForm.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -112,8 +132,9 @@ document.addEventListener("DOMContentLoaded", () => {
       body: formData,
     })
       .then((request) => request.json())
-      .then((data) => {
-        listOfCardsContainer.prepend(getSingleVideoReq(data));
+      .then((videoInfo) => {
+        listOfCardsContainer.prepend(getSingleVideoReq(videoInfo));
+        addVotingFunctionality(videoInfo);
       });
   });
 });
