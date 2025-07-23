@@ -6,14 +6,21 @@ function getSingleVideoReq(videoInfo) {
         <div class="d-flex flex-column">
           <h3>${videoInfo.topic_title}</h3>
           <p class="text-muted mb-2">${videoInfo.topic_details}</p>
-          <p class="mb-0 text-muted">
-            <strong>Expected results:</strong> ${videoInfo.expected_result}
-          </p>
+          ${
+            videoInfo.expected_result &&
+            `
+              <p class="mb-0 text-muted">
+                <strong>Expected results:</strong> ${videoInfo.expected_result}
+              </p>
+            `
+          }
         </div>
         <div class="d-flex flex-column text-center">
-          <a class="btn btn-link">🔺</a>
-          <h3>0</h3>
-          <a class="btn btn-link">🔻</a>
+          <a id="votes_ups_${videoInfo._id}" class="btn btn-link">🔺</a>
+          <h3 id="score_vote_${videoInfo._id}" >${
+    videoInfo.votes.ups - videoInfo.votes.downs
+  }</h3>
+          <a id="votes_downs_${videoInfo._id}" class="btn btn-link">🔻</a>
         </div>
       </div>
       <div class="card-footer d-flex flex-row justify-content-between">
@@ -45,8 +52,54 @@ document.addEventListener("DOMContentLoaded", () => {
   fetch("http://localhost:7777/video-request")
     .then((response) => response.json())
     .then((data) => {
-      data.forEach((obj) => {
-        listOfCardsContainer.appendChild(getSingleVideoReq(obj));
+      data.forEach((videoInfo) => {
+        listOfCardsContainer.appendChild(getSingleVideoReq(videoInfo));
+
+        const voteUpsEle = document.getElementById(
+          `votes_ups_${videoInfo._id}`
+        );
+        const voteDownsEle = document.getElementById(
+          `votes_downs_${videoInfo._id}`
+        );
+        const scoreVote = document.getElementById(
+          `score_vote_${videoInfo._id}`
+        );
+
+        voteUpsEle.addEventListener("click", (e) => {
+          fetch("http://localhost:7777/video-request/vote", {
+            method: "PUT",
+            headers: {
+              "content-Type": "application/json",
+            },
+
+            body: JSON.stringify({
+              id: videoInfo._id,
+              vote_type: "ups",
+            }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              scoreVote.textContent = data.ups - data.downs;
+            });
+        });
+
+        voteDownsEle.addEventListener("click", (e) => {
+          fetch("http://localhost:7777/video-request/vote", {
+            method: "PUT",
+            headers: {
+              "content-type": "application/json",
+            },
+
+            body: JSON.stringify({
+              id: videoInfo._id,
+              vote_type: "downs",
+            }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              scoreVote.textContent = data.ups - data.downs;
+            });
+        });
       });
     });
 
@@ -60,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
       .then((request) => request.json())
       .then((data) => {
-        console.log(data);
+        listOfCardsContainer.prepend(getSingleVideoReq(data));
       });
   });
 });
