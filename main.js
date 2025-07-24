@@ -1,4 +1,15 @@
 const listOfCardsContainer = document.getElementById("listOfRequests");
+let searchTerm = "";
+let sortBy = "newFirst";
+
+function debounce(fn, time) {
+  let timeout;
+
+  return function (...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn.apply(this, args), time);
+  };
+}
 
 function getSingleVideoReq(videoInfo) {
   let card = document.createElement("div");
@@ -89,8 +100,10 @@ function addVotingFunctionality(videoInfo) {
   });
 }
 
-function loadAllVideoRequests(sortedByOption = "newFirst") {
-  fetch(`http://localhost:7777/video-request?sortBy=${sortedByOption}`)
+function loadAllVideoRequests(sortedByOption = "newFirst", searchTerm = "") {
+  fetch(
+    `http://localhost:7777/video-request?sortBy=${sortedByOption}&searchTerm=${searchTerm}`
+  )
     .then((response) => response.json())
     .then((data) => {
       listOfCardsContainer.innerHTML = "";
@@ -105,6 +118,7 @@ function loadAllVideoRequests(sortedByOption = "newFirst") {
 document.addEventListener("DOMContentLoaded", () => {
   const videoRequestForm = document.getElementById("form_video_request");
   const sortByElements = document.querySelectorAll("[id*=sort_by_]");
+  const searchEle = document.getElementById("search_box");
 
   loadAllVideoRequests();
 
@@ -112,8 +126,8 @@ document.addEventListener("DOMContentLoaded", () => {
     ele.addEventListener("click", function (e) {
       e.preventDefault();
 
-      const sortBy = this.querySelector("input");
-      loadAllVideoRequests(sortBy.value);
+      sortBy = this.querySelector("input").value;
+      loadAllVideoRequests(sortBy, searchTerm);
 
       sortByElements.forEach((ele) => {
         ele.classList.remove("active");
@@ -122,6 +136,14 @@ document.addEventListener("DOMContentLoaded", () => {
       e.currentTarget.classList.add("active");
     });
   });
+
+  searchEle.addEventListener(
+    "input",
+    debounce(function (e) {
+      searchTerm = e.target.value;
+      loadAllVideoRequests(sortBy, searchTerm);
+    }, 300)
+  );
 
   videoRequestForm.addEventListener("submit", (e) => {
     e.preventDefault();
