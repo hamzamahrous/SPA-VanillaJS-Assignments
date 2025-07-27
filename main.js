@@ -1,6 +1,9 @@
 const listOfCardsContainer = document.getElementById("listOfRequests");
-let searchTerm = "";
-let sortBy = "newFirst";
+const state = {
+  sortBy: "newFirst",
+  userId: "",
+  searchTerm: "",
+};
 
 function debounce(fn, time) {
   let timeout;
@@ -14,42 +17,50 @@ function debounce(fn, time) {
 function getSingleVideoReq(videoInfo) {
   let card = document.createElement("div");
   card.innerHTML = `
-    <div class="card mb-3">
-      <div class="card-body d-flex justify-content-between flex-row">
+    <div class="card mb-4 shadow-sm border-0 rounded-3 overflow-hidden">
+      <div class="card-body d-flex justify-content-between flex-row gap-3">
         <div class="d-flex flex-column">
-          <h3>${videoInfo.topic_title}</h3>
-          <p class="text-muted mb-2">${videoInfo.topic_details}</p>
+          <h3 class="h3 fw-bold text-primary" style="font-size: 1.5rem;">${
+            videoInfo.topic_title
+          }</h3>
+          <p class="text-muted mb-2" style="font-size: 1.1rem;">${
+            videoInfo.topic_details
+          }</p>
           ${
             videoInfo.expected_result &&
             `
-              <p class="mb-0 text-muted">
+              <p class="mb-0 text-muted" style="font-size: 1.1rem;">
                 <strong>Expected results:</strong> ${videoInfo.expected_result}
               </p>
             `
           }
         </div>
-        <div class="d-flex flex-column text-center">
-          <a id="votes_ups_${videoInfo._id}" class="btn btn-link">🔺</a>
-          <h3 id="score_vote_${videoInfo._id}" >${
+        <div class="d-flex flex-column align-items-center justify-content-center">
+          <a id="votes_ups_${
+            videoInfo._id
+          }" class="btn btn-sm text-success mb-1" style="font-size: 1.2rem;">🔺</a>
+          <h4 class="my-0 fs-3" id="score_vote_${videoInfo._id}">${
     videoInfo.votes.ups - videoInfo.votes.downs
-  }</h3>
-          <a id="votes_downs_${videoInfo._id}" class="btn btn-link">🔻</a>
+  }</h4>
+          <a id="votes_downs_${
+            videoInfo._id
+          }" class="btn btn-sm text-danger mt-1" style="font-size: 1.2rem;">🔻</a>
         </div>
       </div>
-      <div class="card-footer d-flex flex-row justify-content-between">
+      <div class="card-footer d-flex flex-row justify-content-between bg-light text-muted" style="font-size: 0.9rem;">
         <div>
-          <span class="text-info">${String(
+          <span class="badge bg-info text-white" style="font-size: 1rem;">${String(
             videoInfo.status
           ).toLocaleUpperCase()}</span>
-          &bullet; added by <strong>${videoInfo.author_name}</strong> on
+          &nbsp;• added by <strong>${videoInfo.author_name}</strong> on
           <strong>${new Date(
             videoInfo.submit_date
           ).toLocaleDateString()}</strong>
         </div>
-        <div
-          class="d-flex justify-content-center flex-column 408ml-auto mr-2"
-        >
-          <div class="badge badge-success">${videoInfo.target_level}</div>
+        <div class="d-flex align-items-center">
+          <div class="badge bg-success text-white px-3 py-2 fs-5">${
+            videoInfo.target_level
+          }</div>
         </div>
       </div>
     </div>
@@ -116,21 +127,8 @@ function loadAllVideoRequests(sortedByOption = "newFirst", searchTerm = "") {
 }
 
 function checkFormValidity(formData) {
-  const name = formData.get("author_name");
-  const email = formData.get("author_email");
   const topic = formData.get("topic_title");
   const topic_details = formData.get("topic_details");
-  const email_pattern = /(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)/;
-
-  if (!name || name.length < 3) {
-    document
-      .querySelector('input[name="author_name"]')
-      .classList.add("is-invalid");
-  }
-
-  if (!email || !email_pattern.test(email)) {
-    document.querySelector('[name="author_email"]').classList.add("is-invalid");
-  }
 
   if (!topic || topic.length > 50) {
     document.querySelector('[name="topic_title"]').classList.add("is-invalid");
@@ -159,19 +157,29 @@ function checkFormValidity(formData) {
 
 document.addEventListener("DOMContentLoaded", () => {
   const videoRequestForm = document.getElementById("form_video_request");
-  const sortByElements = document.querySelectorAll("[id*=sort_by_]");
+  const Elements = document.querySelectorAll("[id*=sort_by_]");
   const searchEle = document.getElementById("search_box");
+
+  const formLoginElm = document.querySelector("#login-form");
+  const appContentElm = document.querySelector(".app-content");
+
+  if (window.location.search) {
+    state.userId = new URLSearchParams(window.location.search).get("id");
+    formLoginElm.classList.add("d-none");
+    appContentElm.classList.remove("d-none");
+  }
 
   loadAllVideoRequests();
 
-  sortByElements.forEach((ele) => {
+  Elements.forEach((ele) => {
     ele.addEventListener("click", function (e) {
       e.preventDefault();
 
-      sortBy = this.querySelector("input").value;
-      loadAllVideoRequests(sortBy, searchTerm);
+      state.sortBy = this.querySelector("input").value;
+      loadAllVideoRequests(state.sortBy, state.searchTerm);
 
-      sortByElements.forEach((ele) => {
+      // ✅ Fix the class toggling here
+      Elements.forEach((ele) => {
         ele.classList.remove("active");
       });
 
@@ -182,14 +190,15 @@ document.addEventListener("DOMContentLoaded", () => {
   searchEle.addEventListener(
     "input",
     debounce(function (e) {
-      searchTerm = e.target.value;
-      loadAllVideoRequests(sortBy, searchTerm);
+      state.searchTerm = e.target.value;
+      loadAllVideoRequests(state.sortBy, state.searchTerm);
     }, 300)
   );
 
   videoRequestForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const formData = new FormData(videoRequestForm);
+    formData.append("author_id", state.userId);
 
     const is_valid = checkFormValidity(formData);
     if (!is_valid) {
