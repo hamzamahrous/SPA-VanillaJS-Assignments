@@ -40,7 +40,7 @@ function getSingleVideoReq(videoInfo) {
             videoInfo._id
           }" class="btn btn-sm text-success mb-1" style="font-size: 1.2rem;">🔺</a>
           <h4 class="my-0 fs-3" id="score_vote_${videoInfo._id}">${
-    videoInfo.votes.ups - videoInfo.votes.downs
+    videoInfo.votes.ups.length - videoInfo.votes.downs.length
   }</h4>
           <a id="votes_downs_${
             videoInfo._id
@@ -69,46 +69,53 @@ function getSingleVideoReq(videoInfo) {
   return card;
 }
 
+function applyVoteStyle(video_id, votes_list) {
+  const voteUpsElm = document.getElementById(`votes_ups_${video_id}`);
+  const voteDownsElm = document.getElementById(`votes_downs_${video_id}`);
+
+  voteUpsElm.style.opacity = "1";
+  voteDownsElm.style.opacity = "1";
+
+  console.log(votes_list);
+
+  if (votes_list.ups.includes(state.userId)) {
+    voteDownsElm.style.opacity = "0.5";
+  } else if (votes_list.downs.includes(state.userId)) {
+    voteDownsElm.style.opacity = "0.5";
+  }
+}
+
 function addVotingFunctionality(videoInfo) {
-  const voteUpsEle = document.getElementById(`votes_ups_${videoInfo._id}`);
-  const voteDownsEle = document.getElementById(`votes_downs_${videoInfo._id}`);
+  applyVoteStyle(videoInfo._id, videoInfo.votes);
+
+  const scoreElms = document.querySelectorAll(
+    `[id^=votes_][id$=_${videoInfo._id}]`
+  );
   const scoreVote = document.getElementById(`score_vote_${videoInfo._id}`);
 
-  voteUpsEle.addEventListener("click", (e) => {
-    fetch("http://localhost:7777/video-request/vote", {
-      method: "PUT",
-      headers: {
-        "content-Type": "application/json",
-      },
+  scoreElms.forEach((ele) =>
+    ele.addEventListener("click", function (e) {
+      e.preventDefault();
+      const [, vote_type, id] = e.target.getAttribute("id").split("_");
+      fetch("http://localhost:7777/video-request/vote", {
+        method: "PUT",
+        headers: {
+          "content-Type": "application/json",
+        },
 
-      body: JSON.stringify({
-        id: videoInfo._id,
-        vote_type: "ups",
-      }),
+        body: JSON.stringify({
+          id,
+          vote_type,
+          userId: state.userId,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          scoreVote.textContent = data.ups.length - data.downs.length;
+          applyVoteStyle(id, data);
+        });
     })
-      .then((res) => res.json())
-      .then((data) => {
-        scoreVote.textContent = data.ups - data.downs;
-      });
-  });
-
-  voteDownsEle.addEventListener("click", (e) => {
-    fetch("http://localhost:7777/video-request/vote", {
-      method: "PUT",
-      headers: {
-        "content-type": "application/json",
-      },
-
-      body: JSON.stringify({
-        id: videoInfo._id,
-        vote_type: "downs",
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        scoreVote.textContent = data.ups - data.downs;
-      });
-  });
+  );
 }
 
 function loadAllVideoRequests(sortedByOption = "newFirst", searchTerm = "") {
@@ -178,7 +185,6 @@ document.addEventListener("DOMContentLoaded", () => {
       state.sortBy = this.querySelector("input").value;
       loadAllVideoRequests(state.sortBy, state.searchTerm);
 
-      // ✅ Fix the class toggling here
       Elements.forEach((ele) => {
         ele.classList.remove("active");
       });
