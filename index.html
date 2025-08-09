@@ -3,183 +3,258 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Semicolon | video request</title>
+    <title>Semicolon | Video Request</title>
     <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
     />
+    <link rel="stylesheet" href="main.css" />
+    <style>
+      body {
+        background-color: #f9fafb;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+      .btn-primary,
+      .btn-success {
+        border-radius: 8px;
+      }
+      h3,
+      h1 {
+        font-weight: 600;
+      }
+
+      .btn-outline-primary {
+        border-radius: 8px;
+        border-width: 1px;
+      }
+      .btn-group .btn-outline-primary.active,
+      .btn-group .btn-outline-primary.active:focus,
+      .btn-group .btn-outline-primary.active:hover {
+        background-color: #0d6efd;
+        color: #fff;
+        border-color: #0d6efd;
+      }
+    </style>
   </head>
   <body>
-    <div class="container my-5">
-      <div class="container col-md-5 offset-md-4 pt-5">
-        <form
-          id="login-form"
-          class="p-4 shadow-sm rounded bg-light"
-          action="http://localhost:7777/users/login"
-          method="post"
-        >
-          <h3 class="mb-4 text-center text-primary">Login</h3>
-          <div class="col-md">
-            <div class="form-group">
+    <div class="container py-3">
+      <!-- Login Form -->
+      <div class="row justify-content-center my-5">
+        <div class="col-md-5">
+          <form
+            id="login-form"
+            class="card shadow-sm border-0 p-4 rounded-4"
+            action="http://localhost:7777/users/login"
+            method="post"
+          >
+            <!-- Title -->
+            <h3 class="mb-4 text-center fw-bold text-primary">Welcome Back</h3>
+            <p class="text-center text-muted mb-4" style="font-size: 0.95rem">
+              Please enter your details to continue
+            </p>
+
+            <!-- Name -->
+            <div class="mb-3">
               <input
-                class="form-control"
+                class="form-control rounded-3 py-2"
                 name="author_name"
-                placeholder="Write your name here"
+                placeholder="Your name"
                 type="text"
                 required
               />
-
-              <p class="invalid-feedback">
-                this field is required and should have a min length of 3
+              <p class="invalid-feedback mt-1">
+                This field is required and should have a minimum length of 3
               </p>
             </div>
-          </div>
-          <div class="col-md">
-            <div class="form-group">
-              <label for="author_email">Your email *</label>
+
+            <!-- Email -->
+            <div class="mb-3">
               <input
-                class="form-control"
+                class="form-control rounded-3 py-2"
                 name="author_email"
-                placeholder="Write your email here"
+                placeholder="Your email"
                 type="email"
+                required
               />
-
-              <p class="invalid-feedback">
-                this field is required and should be a valid email
+              <p class="invalid-feedback mt-1">
+                This field is required and should be a valid email
               </p>
             </div>
-          </div>
 
-          <div class="col-md">
-            <div class="form-group">
-              <button
-                class="btn btn-primary btn-block"
-                name="form-login"
-                type="submit"
-              >
-                login
-              </button>
-            </div>
-          </div>
-        </form>
+            <!-- Button -->
+            <button
+              class="btn btn-primary w-100 rounded-3 py-2 fw-semibold"
+              name="form-login"
+              type="submit"
+            >
+              Login
+            </button>
+          </form>
+        </div>
       </div>
 
-      <div class="app-content container d-none">
-        <div class="formContainer">
+      <!-- App Content -->
+      <div class="app-content container d-none mt-5">
+        <!-- Video Request Form -->
+        <div class="card p-4 mb-4">
           <form id="form_video_request" novalidate>
-            <div class="row">
-              <div class="col-md">
-                <div class="form-group">
-                  <label for="topic_title">Topic *</label>
-                  <input
-                    class="form-control"
-                    name="topic_title"
-                    placeholder="Write your suggested topic here"
-                    type="text"
-                    required
-                  />
-
-                  <p class="invalid-feedback">
-                    this field is required and shouldn't exceed 50 character in
-                    length
-                  </p>
-                </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="topic_title" class="form-label">Topic *</label>
+                <input
+                  class="form-control"
+                  name="topic_title"
+                  placeholder="Write your suggested topic here"
+                  type="text"
+                  required
+                />
+                <p class="invalid-feedback">
+                  this field is required and shouldn't exceed 50 characters
+                </p>
               </div>
-              <div class="col-md">
-                <div class="form-group">
-                  <label for="target_level">Target level</label>
-                  <select
-                    class="form-control"
-                    name="target_level"
-                    id="target_level"
-                    placeholder="Write your name here"
-                  >
-                    <option value="beginner">Beginner</option>
-                    <option value="medium">Medium</option>
-                    <option value="advanced">Advanced</option>
-                  </select>
-                </div>
+              <div class="col-md-6">
+                <label for="target_level" class="form-label"
+                  >Target level</label
+                >
+                <select
+                  class="form-select"
+                  name="target_level"
+                  id="target_level"
+                >
+                  <option value="beginner">Beginner</option>
+                  <option value="medium">Medium</option>
+                  <option value="advanced">Advanced</option>
+                </select>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-md">
-                <div class="form-group">
-                  <label for="topic_details">More details *</label>
-                  <textarea
-                    class="form-control"
-                    name="topic_details"
-                    placeholder="Write your topic in more details here"
-                    required
-                  ></textarea>
-
-                  <p class="invalid-feedback">this field is required</p>
-                </div>
+              <div class="col-md-6">
+                <label for="topic_details" class="form-label"
+                  >More details *</label
+                >
+                <textarea
+                  class="form-control"
+                  name="topic_details"
+                  placeholder="Write your topic in more details here"
+                  required
+                ></textarea>
+                <p class="invalid-feedback">this field is required</p>
               </div>
-              <div class="col-md">
-                <div class="form-group">
-                  <label for="expected_result">Expected results</label>
-                  <textarea
-                    class="form-control"
-                    name="expected_result"
-                    placeholder="Write what do you expect after watching this video"
-                  ></textarea>
-                </div>
+              <div class="col-md-6">
+                <label for="expected_result" class="form-label"
+                  >Expected results</label
+                >
+                <textarea
+                  class="form-control"
+                  name="expected_result"
+                  placeholder="Write what you expect after watching this video"
+                ></textarea>
               </div>
-            </div>
-
-            <div class="d-flex justify-content-center align-items-center">
-              <button type="submit" class="btn btn-success mt-3">
-                Send video request
-              </button>
+              <div class="col-12 text-center">
+                <button type="submit" class="btn btn-success mt-3 px-4">
+                  Send Video Request
+                </button>
+              </div>
             </div>
           </form>
         </div>
-        <hr />
-        <h1 class="mb-4">List of requested videos</h1>
 
+        <hr />
+
+        <!-- Video Requests Header -->
+        <h1 class="mb-4 text-center p-4">List of Requested Videos</h1>
+
+        <!-- Sorting & Filtering -->
         <div
-          class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 mb-4"
+          class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4"
         >
-          <!-- Sort Group -->
+          <!-- Sort -->
           <div class="btn-group btn-group-toggle mt-4" data-toggle="buttons">
-            <label class="btn btn-primary active" id="sort_by_new">
-              <input type="radio" name="sort" value="newFirst" /> New first
+            <label class="btn btn-outline-primary active" id="sort_by_new">
+              <input
+                type="radio"
+                name="sort"
+                value="newFirst"
+                autocomplete="off"
+                checked
+              />
+              New first
             </label>
-            <label class="btn btn-primary" id="sort_by_top">
-              <input type="radio" name="sort" value="topVotedFirst" />
+
+            <label class="btn btn-outline-primary" id="sort_by_top">
+              <input
+                type="radio"
+                name="sort"
+                value="topVotedFirst"
+                autocomplete="off"
+              />
               Top voted first
             </label>
           </div>
 
-          <!-- Filter Group -->
+          <!-- Filter -->
           <div class="btn-group btn-group-toggle mt-4" data-toggle="buttons">
-            <label class="btn btn-primary active" id="filter_by_all">
-              <input type="radio" name="filter" value="all" checked /> All
+            <label class="btn btn-outline-primary active" id="filter_by_all">
+              <input
+                type="radio"
+                name="filter"
+                value="all"
+                autocomplete="off"
+                checked
+              />
+              All
             </label>
-            <label class="btn btn-primary" id="filter_by_new">
-              <input type="radio" name="filter" value="new" /> New
+
+            <label class="btn btn-outline-primary" id="filter_by_new">
+              <input
+                type="radio"
+                name="filter"
+                value="new"
+                autocomplete="off"
+              />
+              New
             </label>
-            <label class="btn btn-primary" id="filter_by_planned">
-              <input type="radio" name="filter" value="planned" /> Planned
+
+            <label class="btn btn-outline-primary" id="filter_by_planned">
+              <input
+                type="radio"
+                name="filter"
+                value="planned"
+                autocomplete="off"
+              />
+              Planned
             </label>
-            <label class="btn btn-primary" id="filter_by_done">
-              <input type="radio" name="filter" value="done" /> Done
+
+            <label class="btn btn-outline-primary" id="filter_by_done">
+              <input
+                type="radio"
+                name="filter"
+                value="done"
+                autocomplete="off"
+              />
+              Done
             </label>
           </div>
 
+          <!-- Search -->
           <div>
             <input
               type="search"
-              class="form-control mt-4"
+              class="form-control"
               id="search_box"
               placeholder="Type your search term"
             />
           </div>
         </div>
+        <!-- Requests List -->
         <div id="listOfRequests"></div>
       </div>
     </div>
 
     <script src="main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

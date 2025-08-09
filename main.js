@@ -17,54 +17,56 @@ function debounce(fn, time) {
 function getSingleVideoReq(videoInfo) {
   let card = document.createElement("div");
   card.innerHTML = `
-    <div class="card mb-4 shadow-sm border-0 rounded-3 overflow-hidden">
-      <div class="card-body d-flex justify-content-between flex-row gap-3">
-        <div class="d-flex flex-column">
-          <h3 class="h3 fw-bold text-primary" style="font-size: 1.5rem;">${
-            videoInfo.topic_title
-          }</h3>
-          <p class="text-muted mb-2" style="font-size: 1.1rem;">${
-            videoInfo.topic_details
-          }</p>
-          ${
-            videoInfo.expected_result &&
-            `
-              <p class="mb-0 text-muted" style="font-size: 1.1rem;">
-                <strong>Expected results:</strong> ${videoInfo.expected_result}
-              </p>
-            `
-          }
-        </div>
-        <div class="d-flex flex-column align-items-center justify-content-center">
-          <a id="votes_ups_${
-            videoInfo._id
-          }" class="btn btn-sm text-success mb-1" style="font-size: 1.2rem;">🔺</a>
-          <h4 class="my-0 fs-3" id="score_vote_${videoInfo._id}">${
-    videoInfo.votes.ups.length - videoInfo.votes.downs.length
-  }</h4>
-          <a id="votes_downs_${
-            videoInfo._id
-          }" class="btn btn-sm text-danger mt-1" style="font-size: 1.2rem;">🔻</a>
-        </div>
+  <div class="card mb-4 border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="card-body d-flex justify-content-between gap-4 p-4">
+      <div class="d-flex flex-column">
+        <h3 class="fw-semibold text-dark mb-2" style="font-size:1.4rem;">
+          ${videoInfo.topic_title}
+        </h3>
+        <p class="text-secondary mb-3" style="font-size:1rem;">
+          ${videoInfo.topic_details}
+        </p>
+        ${
+          videoInfo.expected_result &&
+          `
+            <p class="mb-0 text-muted" style="font-size:0.95rem;">
+              <strong>Expected results:</strong> ${videoInfo.expected_result}
+            </p>
+          `
+        }
       </div>
-      <div class="card-footer d-flex flex-row justify-content-between bg-light text-muted" style="font-size: 0.9rem;">
-        <div>
-          <span class="badge bg-info text-white" style="font-size: 1rem;">${String(
-            videoInfo.status
-          ).toLocaleUpperCase()}</span>
-          &nbsp;• added by <strong>${videoInfo.author_name}</strong> on
-          <strong>${new Date(
-            videoInfo.submit_date
-          ).toLocaleDateString()}</strong>
-        </div>
-        <div class="d-flex align-items-center">
-          <div class="badge bg-success text-white px-3 py-2 fs-5">${
-            videoInfo.target_level
-          }</div>
-        </div>
+      <div class="d-flex flex-column align-items-center justify-content-center">
+        <a id="votes_ups_${videoInfo._id}" 
+           class="btn btn-light border-0 rounded-circle mb-2 shadow-sm vote-btn"
+           title="Upvote">
+          🔺
+        </a>
+        <h4 class="my-0 fw-bold" id="score_vote_${videoInfo._id}">
+          ${videoInfo.votes.ups.length - videoInfo.votes.downs.length}
+        </h4>
+        <a id="votes_downs_${videoInfo._id}" 
+           class="btn btn-light border-0 rounded-circle mt-2 shadow-sm vote-btn"
+           title="Downvote">
+          🔻
+        </a>
       </div>
     </div>
-  `;
+    <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center px-4 py-3 small text-secondary">
+      <div>
+        <span class="badge rounded-pill bg-primary-subtle text-primary me-2 px-3 py-2 fw-medium">
+          ${String(videoInfo.status).toLocaleUpperCase()}
+        </span>
+        added by <strong>${videoInfo.author_name}</strong> on
+        <strong>${new Date(videoInfo.submit_date).toLocaleDateString()}</strong>
+      </div>
+      <div>
+        <span class="badge rounded-pill bg-success-subtle text-success px-3 py-2">
+          ${videoInfo.target_level}
+        </span>
+      </div>
+    </div>
+  </div>
+`;
 
   return card;
 }
@@ -76,10 +78,8 @@ function applyVoteStyle(video_id, votes_list) {
   voteUpsElm.style.opacity = "1";
   voteDownsElm.style.opacity = "1";
 
-  console.log(votes_list);
-
   if (votes_list.ups.includes(state.userId)) {
-    voteDownsElm.style.opacity = "0.5";
+    voteUpsElm.style.opacity = "0.5";
   } else if (votes_list.downs.includes(state.userId)) {
     voteDownsElm.style.opacity = "0.5";
   }
@@ -106,7 +106,7 @@ function addVotingFunctionality(videoInfo) {
         body: JSON.stringify({
           id,
           vote_type,
-          userId: state.userId,
+          user_id: state.userId,
         }),
       })
         .then((res) => res.json())
@@ -119,6 +119,7 @@ function addVotingFunctionality(videoInfo) {
 }
 
 function loadAllVideoRequests(sortedByOption = "newFirst", searchTerm = "") {
+  console.log(sortedByOption);
   fetch(
     `http://localhost:7777/video-request?sortBy=${sortedByOption}&searchTerm=${searchTerm}`
   )

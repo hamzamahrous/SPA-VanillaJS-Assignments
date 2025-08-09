@@ -50,11 +50,11 @@ module.exports = {
     if (!oldVoteList.includes(user_id)) {
       oldVoteList.push(user_id);
     } else {
-      oldVoteList.splice(user_id);
+      oldVoteList.splice(oldVoteList.indexOf(user_id), 1);
     }
 
     if (oldOtherList.includes(user_id)) {
-      oldOtherList.splice(user_id);
+      oldOtherList.splice(oldOtherList.indexOf(user_id), 1);
     }
 
     return VideoRequest.findByIdAndUpdate(
