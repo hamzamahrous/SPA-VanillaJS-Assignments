@@ -100,155 +100,158 @@
 
       <!-- App Content -->
       <div class="app-content container d-none mt-5">
-        <!-- Video Request Form -->
-        <div class="card p-4 mb-4">
-          <form id="form_video_request" novalidate>
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label for="topic_title" class="form-label">Topic *</label>
+        <div class="normal-user">
+          <!-- Video Request Form -->
+          <div class="card p-4 mb-4">
+            <form id="form_video_request" novalidate>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="topic_title" class="form-label">Topic *</label>
+                  <input
+                    class="form-control"
+                    name="topic_title"
+                    placeholder="Write your suggested topic here"
+                    type="text"
+                    required
+                  />
+                  <p class="invalid-feedback">
+                    this field is required and shouldn't exceed 50 characters
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <label for="target_level" class="form-label"
+                    >Target level</label
+                  >
+                  <select
+                    class="form-select"
+                    name="target_level"
+                    id="target_level"
+                  >
+                    <option value="beginner">Beginner</option>
+                    <option value="medium">Medium</option>
+                    <option value="advanced">Advanced</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label for="topic_details" class="form-label"
+                    >More details *</label
+                  >
+                  <textarea
+                    class="form-control"
+                    name="topic_details"
+                    placeholder="Write your topic in more details here"
+                    required
+                  ></textarea>
+                  <p class="invalid-feedback">this field is required</p>
+                </div>
+                <div class="col-md-6">
+                  <label for="expected_result" class="form-label"
+                    >Expected results</label
+                  >
+                  <textarea
+                    class="form-control"
+                    name="expected_result"
+                    placeholder="Write what you expect after watching this video"
+                  ></textarea>
+                </div>
+                <div class="col-12 text-center">
+                  <button type="submit" class="btn btn-success mt-3 px-4">
+                    Send Video Request
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <hr />
+
+          <!-- Video Requests Header -->
+          <h1 class="mb-4 text-center p-4">List of Requested Videos</h1>
+
+          <!-- Sorting & Filtering -->
+          <div
+            class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4"
+          >
+            <!-- Sort -->
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+              <label class="btn btn-outline-primary active" id="sort_by_new">
                 <input
-                  class="form-control"
-                  name="topic_title"
-                  placeholder="Write your suggested topic here"
-                  type="text"
-                  required
+                  type="radio"
+                  name="sort"
+                  value="newFirst"
+                  autocomplete="off"
+                  checked
                 />
-                <p class="invalid-feedback">
-                  this field is required and shouldn't exceed 50 characters
-                </p>
-              </div>
-              <div class="col-md-6">
-                <label for="target_level" class="form-label"
-                  >Target level</label
-                >
-                <select
-                  class="form-select"
-                  name="target_level"
-                  id="target_level"
-                >
-                  <option value="beginner">Beginner</option>
-                  <option value="medium">Medium</option>
-                  <option value="advanced">Advanced</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label for="topic_details" class="form-label"
-                  >More details *</label
-                >
-                <textarea
-                  class="form-control"
-                  name="topic_details"
-                  placeholder="Write your topic in more details here"
-                  required
-                ></textarea>
-                <p class="invalid-feedback">this field is required</p>
-              </div>
-              <div class="col-md-6">
-                <label for="expected_result" class="form-label"
-                  >Expected results</label
-                >
-                <textarea
-                  class="form-control"
-                  name="expected_result"
-                  placeholder="Write what you expect after watching this video"
-                ></textarea>
-              </div>
-              <div class="col-12 text-center">
-                <button type="submit" class="btn btn-success mt-3 px-4">
-                  Send Video Request
-                </button>
-              </div>
+                New first
+              </label>
+
+              <label class="btn btn-outline-primary" id="sort_by_top">
+                <input
+                  type="radio"
+                  name="sort"
+                  value="topVotedFirst"
+                  autocomplete="off"
+                />
+                Top voted first
+              </label>
             </div>
-          </form>
-        </div>
 
-        <hr />
+            <!-- Filter -->
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+              <label class="btn btn-outline-primary active" id="filter_by_all">
+                <input
+                  type="radio"
+                  name="filter"
+                  value="all"
+                  autocomplete="off"
+                  checked
+                />
+                All
+              </label>
 
-        <!-- Video Requests Header -->
-        <h1 class="mb-4 text-center p-4">List of Requested Videos</h1>
+              <label class="btn btn-outline-primary" id="filter_by_new">
+                <input
+                  type="radio"
+                  name="filter"
+                  value="new"
+                  autocomplete="off"
+                />
+                New
+              </label>
 
-        <!-- Sorting & Filtering -->
-        <div
-          class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4"
-        >
-          <!-- Sort -->
-          <div class="btn-group btn-group-toggle mt-4" data-toggle="buttons">
-            <label class="btn btn-outline-primary active" id="sort_by_new">
+              <label class="btn btn-outline-primary" id="filter_by_planned">
+                <input
+                  type="radio"
+                  name="filter"
+                  value="planned"
+                  autocomplete="off"
+                />
+                Planned
+              </label>
+
+              <label class="btn btn-outline-primary" id="filter_by_done">
+                <input
+                  type="radio"
+                  name="filter"
+                  value="done"
+                  autocomplete="off"
+                />
+                Done
+              </label>
+            </div>
+
+            <!-- Search -->
+            <div>
               <input
-                type="radio"
-                name="sort"
-                value="newFirst"
-                autocomplete="off"
-                checked
+                type="search"
+                class="form-control"
+                id="search_box"
+                placeholder="Type your search term"
               />
-              New first
-            </label>
-
-            <label class="btn btn-outline-primary" id="sort_by_top">
-              <input
-                type="radio"
-                name="sort"
-                value="topVotedFirst"
-                autocomplete="off"
-              />
-              Top voted first
-            </label>
-          </div>
-
-          <!-- Filter -->
-          <div class="btn-group btn-group-toggle mt-4" data-toggle="buttons">
-            <label class="btn btn-outline-primary active" id="filter_by_all">
-              <input
-                type="radio"
-                name="filter"
-                value="all"
-                autocomplete="off"
-                checked
-              />
-              All
-            </label>
-
-            <label class="btn btn-outline-primary" id="filter_by_new">
-              <input
-                type="radio"
-                name="filter"
-                value="new"
-                autocomplete="off"
-              />
-              New
-            </label>
-
-            <label class="btn btn-outline-primary" id="filter_by_planned">
-              <input
-                type="radio"
-                name="filter"
-                value="planned"
-                autocomplete="off"
-              />
-              Planned
-            </label>
-
-            <label class="btn btn-outline-primary" id="filter_by_done">
-              <input
-                type="radio"
-                name="filter"
-                value="done"
-                autocomplete="off"
-              />
-              Done
-            </label>
-          </div>
-
-          <!-- Search -->
-          <div>
-            <input
-              type="search"
-              class="form-control"
-              id="search_box"
-              placeholder="Type your search term"
-            />
+            </div>
           </div>
         </div>
+
         <!-- Requests List -->
         <div id="listOfRequests"></div>
       </div>
