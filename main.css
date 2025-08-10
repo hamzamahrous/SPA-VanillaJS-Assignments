@@ -6,3 +6,7 @@
   transform: scale(1.05);
   background-color: #f8f9fa;
 }
+
+.btn-group-toggle input[type="radio"] {
+  display: none;
+}

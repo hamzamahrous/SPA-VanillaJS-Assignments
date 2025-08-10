@@ -26,26 +26,23 @@ app.post("/video-request", upload.none(), async (req, res, next) => {
 });
 
 app.get("/video-request", async (req, res, next) => {
-  const { sortBy, searchTerm } = req.query;
+  const { sortBy, searchTerm, filterBy } = req.query;
   let data;
 
   if (searchTerm) {
-    data = await VideoRequestData.searchRequests(searchTerm);
+    data = await VideoRequestData.searchRequests(searchTerm, filterBy);
   } else {
-    data = await VideoRequestData.getAllVideoRequests();
+    data = await VideoRequestData.getAllVideoRequests(filterBy);
   }
 
   if (sortBy === "topVotedFirst") {
-    data = data.sort((prev, next) => {
-      if (
-        prev.votes.ups.length - prev.votes.downs.length >
-        next.votes.ups.length - next.votes.downs.length
-      ) {
-        return -1;
-      } else {
-        return 1;
-      }
-    });
+    if (sortBy === "topVotedFirst") {
+      data = data.sort((a, b) => {
+        const netA = a.votes.ups.length - a.votes.downs.length;
+        const netB = b.votes.ups.length - b.votes.downs.length;
+        return netB - netA;
+      });
+    }
   }
 
   res.send(data);

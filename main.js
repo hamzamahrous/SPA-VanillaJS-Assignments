@@ -4,6 +4,7 @@ const SUPER_USER_ID = "20030611";
 const state = {
   sortBy: "newFirst",
   userId: "",
+  filterBy: "all",
   searchTerm: "",
   isSuperUser: false,
 };
@@ -81,7 +82,22 @@ function getSingleVideoReq(videoInfo) {
           `
         }
       </div>
-      <div class="d-flex flex-column align-items-center justify-content-center">
+
+      ${
+        videoInfo.status === "done"
+          ? `
+            <div class="ml-auto mr-3">
+              <iframe width='240' height='135' src="https://www.youtube.com/embed/${videoInfo.video_ref}" frameborder="0" allowfullscreen>
+              </iframe>
+            </div>
+        `
+          : ""
+      }
+
+
+      ${
+        videoInfo.status !== "done"
+          ? `      <div class="d-flex flex-column align-items-center justify-content-center">
         <a id="votes_ups_${videoInfo._id}" 
            class="btn btn-light border-0 rounded-circle mb-2 shadow-sm vote-btn"
            title="Upvote">
@@ -95,12 +111,19 @@ function getSingleVideoReq(videoInfo) {
            title="Downvote">
           🔻
         </a>
-      </div>
+      </div>`
+          : ""
+      }
+
     </div>
     <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center px-4 py-3 small text-secondary">
       <div>
         <span class="badge rounded-pill bg-primary-subtle text-primary me-2 px-3 py-2 fw-medium">
-          ${String(videoInfo.status).toLocaleUpperCase()}
+          ${String(videoInfo.status).toLocaleUpperCase()} ${
+    videoInfo.status === "done"
+      ? "on " + new Date(videoInfo.video_ref.date).toLocaleDateString()
+      : ""
+  }
         </span>
         added by <strong>${videoInfo.author_name}</strong> on
         <strong>${new Date(videoInfo.submit_date).toLocaleDateString()}</strong>
@@ -141,6 +164,8 @@ function applyVoteStyle(video_id, votes_list) {
 }
 
 function addVotingFunctionality(videoInfo) {
+  if (videoInfo.status === "done") return;
+
   applyVoteStyle(videoInfo._id, videoInfo.votes);
 
   const scoreElms = document.querySelectorAll(
@@ -175,9 +200,13 @@ function addVotingFunctionality(videoInfo) {
   );
 }
 
-function loadAllVideoRequests(sortedByOption = "newFirst", searchTerm = "") {
+function loadAllVideoRequests(
+  sortedByOption = "newFirst",
+  searchTerm = "",
+  filterBy = "all"
+) {
   fetch(
-    `http://localhost:7777/video-request?sortBy=${sortedByOption}&searchTerm=${searchTerm}`
+    `http://localhost:7777/video-request?sortBy=${sortedByOption}&searchTerm=${searchTerm}&filterBy=${filterBy}`
   )
     .then((response) => response.json())
     .then((data) => {
@@ -311,6 +340,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const videoRequestForm = document.getElementById("form_video_request");
   const Elements = document.querySelectorAll("[id*=sort_by_]");
   const searchEle = document.getElementById("search_box");
+  const filterByElms = document.querySelectorAll("[id^=filter_by_]");
 
   const formLoginElm = document.querySelector("#login-form");
   const appContentElm = document.querySelector(".app-content");
@@ -328,13 +358,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   loadAllVideoRequests();
+  filterByElms.forEach((ele) => {
+    ele.addEventListener("click", function (e) {
+      e.preventDefault();
+      state.filterBy = e.target.getAttribute("id").split("_")[2];
+      filterByElms.forEach((ele) => ele.classList.remove("active"));
+      loadAllVideoRequests(state.sortBy, state.searchTerm, state.filterBy);
+      this.classList.add("active");
+    });
+  });
 
   Elements.forEach((ele) => {
     ele.addEventListener("click", function (e) {
       e.preventDefault();
 
       state.sortBy = this.querySelector("input").value;
-      loadAllVideoRequests(state.sortBy, state.searchTerm);
+      loadAllVideoRequests(state.sortBy, state.searchTerm, state.filterBy);
 
       Elements.forEach((ele) => {
         ele.classList.remove("active");
@@ -348,7 +387,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "input",
     debounce(function (e) {
       state.searchTerm = e.target.value;
-      loadAllVideoRequests(state.sortBy, state.searchTerm);
+      loadAllVideoRequests(state.sortBy, state.searchTerm, state.filterBy);
     }, 300)
   );
 
