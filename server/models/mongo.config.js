@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 mongoose.Promise = require("bluebird");
 
-const mongodbUrl = "mongodb://127.0.0.1:27017/"; // TODO: PUT YOUR VALID MONGODB CONNECTION URL HERE <-
+const mongodbUrl =
+  process.env.MONGODB_ATLAS_URL || "mongodb://127.0.0.1:27017/";
 
 if (!mongodbUrl) {
   console.log(
@@ -11,7 +12,11 @@ if (!mongodbUrl) {
   return;
 }
 
-mongoose.connect(mongodbUrl);
+mongoose.connect(mongodbUrl, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
 const db = mongoose.connection;
 
 db.on("error", console.error.bind(console, "connection error:"));
