@@ -3,6 +3,7 @@ import { getSingleVideoReq } from "./getSingleVideoReq.js";
 import { addVotingFunctionality } from "./addVotingFunctionality.js";
 import { loadAllVideoRequests } from "./loadAllVideoRequests.js";
 import { checkFormValidity } from "./checkFormValidity.js";
+import API from "./api.js";
 
 const state = {
   sortBy: "newFirst",
@@ -81,14 +82,9 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    fetch("http://localhost:7777/video-request", {
-      method: "POST",
-      body: formData,
-    })
-      .then((request) => request.json())
-      .then((videoInfo) => {
-        listOfCardsContainer.prepend(getSingleVideoReq(videoInfo, state));
-        addVotingFunctionality(videoInfo, state);
-      });
+    API.videoReq.post(formData).then((videoInfo) => {
+      listOfCardsContainer.prepend(getSingleVideoReq(videoInfo, state));
+      addVotingFunctionality(videoInfo, state);
+    });
   });
 });
